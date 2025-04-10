@@ -18,7 +18,7 @@ A simple command-line tool written in Go that converts Kubernetes YAML files to 
 1. Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/wzharith/k8s-yaml-to-json.git
 cd k8s_converter_go
 ```
 
