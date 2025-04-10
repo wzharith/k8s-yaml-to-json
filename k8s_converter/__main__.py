@@ -1,0 +1,73 @@
+import sys
+import argparse
+
+
+def add_api_parser(subparsers: argparse._SubParsersAction) -> None:
+    api_parser = subparsers.add_parser("api", help="Start the API server")
+    api_parser.add_argument(
+        "--host", help="Host to bind to (default: 0.0.0.0)", default="0.0.0.0"
+    )
+    api_parser.add_argument(
+        "--port", help="Port to bind to (default: 8000)", type=int, default=8000
+    )
+    api_parser.add_argument(
+        "--reload", help="Enable auto-reload for development", action="store_true"
+    )
+
+
+def add_cli_parser(subparsers: argparse._SubParsersAction) -> None:
+    cli_parser = subparsers.add_parser("cli", help="Run the CLI bulk converter")
+    cli_parser.add_argument(
+        "input", help="Input YAML file or directory containing YAML files"
+    )
+    cli_parser.add_argument(
+        "-o",
+        "--output",
+        help="Output directory for JSON files (default: ./output)",
+        default="./output",
+    )
+    cli_parser.add_argument(
+        "-r",
+        "--recursive",
+        help="Recursively process subdirectories",
+        action="store_true",
+    )
+    cli_parser.add_argument(
+        "--no-pretty",
+        help="Output minified JSON without indentation",
+        action="store_true",
+    )
+    cli_parser.add_argument(
+        "-v", "--verbose", help="Enable verbose logging", action="store_true"
+    )
+
+
+def main():
+    """
+    Main entry point for the k8s_converter package.
+    Dispatches to the appropriate subcommand.
+    """
+    parser = argparse.ArgumentParser(
+        description="Kubernetes YAML to JSON Converter", prog="k8s_converter"
+    )
+
+    subparsers = parser.add_subparsers(dest="command", help="Command to run")
+
+    add_api_parser(subparsers)
+    add_cli_parser(subparsers)
+
+    args = parser.parse_args()
+
+    if args.command == "api":
+        # Import and run API server
+        print("Starting API server...")
+    elif args.command == "cli":
+        # Import and run CLI
+        print("Starting CLI...")
+    else:
+        parser.print_help()
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
