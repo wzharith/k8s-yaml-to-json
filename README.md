@@ -99,19 +99,19 @@ Use the CLI tool for bulk conversion of YAML files:
 
 ```bash
 # Convert a single file
-k8s-converter cli path/to/file.yaml -o output/dir
+python k8s_converter cli path/to/file.yaml -o output/dir
 
 # Convert all YAML files in a directory
-k8s-converter cli path/to/directory -o output/dir
+python k8s_converter cli path/to/directory -o output/dir
 
 # Recursively convert files in subdirectories
-k8s-converter cli path/to/directory -o output/dir -r
+python k8s_converter cli path/to/directory -o output/dir -r
 
 # Output minified JSON
-k8s-converter cli path/to/directory -o output/dir --no-pretty
+python k8s_converter cli path/to/directory -o output/dir --no-pretty
 
 # Enable verbose logging
-k8s-converter cli path/to/directory -o output/dir -v
+python k8s_converter cli path/to/directory -o output/dir -v
 ```
 
 ## Development
