@@ -1,0 +1,16 @@
+[run]
+source = k8s_converter
+omit =
+    */k8s_converter/__init__.py
+    */k8s_converter/*/__init__.py
+    */k8s_converter/__main__.py
+    */tests/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    pass
+    raise ImportError

@@ -8,6 +8,9 @@ import uvicorn
 # Add the project root to the Python path
 sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
 
+from k8s_converter.cli.args import add_common_cli_args
+from k8s_converter.cli.bulk_converter import run_cli
+
 
 def start_server(host: str = "0.0.0.0", port: int = 8000, reload: bool = False):
     """
@@ -22,6 +25,7 @@ def start_server(host: str = "0.0.0.0", port: int = 8000, reload: bool = False):
 
 
 def add_api_parser(subparsers: argparse._SubParsersAction) -> None:
+    """Add API server command parser to the subparsers"""
     api_parser = subparsers.add_parser("api", help="Start the API server")
     api_parser.add_argument(
         "--host", help="Host to bind to (default: 0.0.0.0)", default="0.0.0.0"
@@ -35,30 +39,9 @@ def add_api_parser(subparsers: argparse._SubParsersAction) -> None:
 
 
 def add_cli_parser(subparsers: argparse._SubParsersAction) -> None:
+    """Add CLI bulk converter command parser to the subparsers"""
     cli_parser = subparsers.add_parser("cli", help="Run the CLI bulk converter")
-    cli_parser.add_argument(
-        "input", help="Input YAML file or directory containing YAML files"
-    )
-    cli_parser.add_argument(
-        "-o",
-        "--output",
-        help="Output directory for JSON files (default: ./output)",
-        default="./output",
-    )
-    cli_parser.add_argument(
-        "-r",
-        "--recursive",
-        help="Recursively process subdirectories",
-        action="store_true",
-    )
-    cli_parser.add_argument(
-        "--no-pretty",
-        help="Output minified JSON without indentation",
-        action="store_true",
-    )
-    cli_parser.add_argument(
-        "-v", "--verbose", help="Enable verbose logging", action="store_true"
-    )
+    add_common_cli_args(cli_parser)
 
 
 def main():
@@ -80,8 +63,7 @@ def main():
     if args.command == "api":
         start_server(host=args.host, port=args.port, reload=args.reload)
     elif args.command == "cli":
-        # Import and run CLI
-        print("Starting CLI...")
+        sys.exit(run_cli(args))
     else:
         parser.print_help()
         sys.exit(1)
