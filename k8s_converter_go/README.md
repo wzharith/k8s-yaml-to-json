@@ -16,12 +16,14 @@ A simple command-line tool written in Go that converts Kubernetes YAML files to 
 ## Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd k8s_converter_go
 ```
 
 2. Install dependencies:
+
 ```bash
 go mod download
 ```
@@ -31,11 +33,13 @@ go mod download
 The converter supports two modes of operation:
 
 1. Print JSON to stdout:
+
 ```bash
 go run main.go -input <yaml-file>
 ```
 
 2. Save JSON to a file:
+
 ```bash
 go run main.go -input <yaml-file> -output <json-file>
 ```
@@ -43,6 +47,7 @@ go run main.go -input <yaml-file> -output <json-file>
 ### Example
 
 Convert a Kubernetes deployment YAML to JSON:
+
 ```bash
 # Print to stdout
 go run main.go -input ../k8s_sample/nginx/deployment.yaml
@@ -54,6 +59,7 @@ go run main.go -input ../k8s_sample/nginx/deployment.yaml -output deployment.jso
 ## Testing
 
 Run the unit tests:
+
 ```bash
 # Run tests
 go test
@@ -63,6 +69,7 @@ go test -v
 ```
 
 The tests verify:
+
 - YAML file reading
 - JSON file writing
 - File operations
@@ -73,6 +80,7 @@ The tests verify:
 The repository includes sample Kubernetes YAML files in the `k8s_sample` directory:
 
 ### Nginx Application
+
 - `deployment.yaml`: Nginx deployment configuration
 - `service.yaml`: Nginx service configuration
 - `ingress.yaml`: Nginx ingress configuration
@@ -80,17 +88,19 @@ The repository includes sample Kubernetes YAML files in the `k8s_sample` directo
 - `secret.yaml`: Nginx secrets
 
 ### Development Environment
+
 - `service.yaml`: Development service configuration
 
 ## Building
 
 To build the binary:
+
 ```bash
 go build -o k8s-converter
 ```
 
 Then you can run it directly:
+
 ```bash
 ./k8s-converter -input <yaml-file> [-output <json-file>]
 ```
-
