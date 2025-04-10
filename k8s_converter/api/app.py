@@ -1,15 +1,10 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Body, Query
+from fastapi import FastAPI, HTTPException, UploadFile, File, Body
+from typing import List
 from k8s_converter.core.converter import parse_k8s_yaml, K8sParserError
-from k8s_converter.api.schemas import ConversionResponse
+from k8s_converter.api.schemas import ConversionResponse, BatchConversionResponse
 from k8s_converter.core.logger import logger
 
-import sys
-import os
 import uvicorn
-
-# Add parent directory to path to allow imports
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-
 
 app = FastAPI(
     title="Kubernetes YAML to JSON Converter API",
@@ -52,10 +47,8 @@ async def convert_raw_yaml(yaml_content: str = Body(..., media_type="text/plain"
         ConversionResponse: JSON content and status message
     """
     try:
-        # Parse YAML content
         k8s_dict = parse_k8s_yaml(yaml_content)
 
-        # Return JSON response
         return ConversionResponse(
             json_content=k8s_dict, message="YAML converted successfully"
         )
@@ -104,6 +97,75 @@ async def convert_yaml_file(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
+@app.post("/convert/batch", response_model=BatchConversionResponse)
+async def convert_yaml_batch(files: List[UploadFile] = File(...)):
+    """
+    Convert multiple uploaded YAML files to JSON
+
+    Args:
+        files (List[UploadFile]): List of YAML files to convert
+        pretty (bool): Whether to format JSON with indentation
+
+    Returns:
+        BatchConversionResponse: Results of batch conversion
+    """
+    results = []
+    successful = 0
+    failed = 0
+
+    for file in files:
+        try:
+            content = await file.read()
+            yaml_content = content.decode("utf-8")
+
+            k8s_dict = parse_k8s_yaml(yaml_content)
+
+            results.append(
+                {
+                    "filename": file.filename,
+                    "status": "success",
+                    "json_content": k8s_dict,
+                }
+            )
+            successful += 1
+
+        except K8sParserError as e:
+            logger.error(f"YAML parsing error in file {file.filename}: {str(e)}")
+            results.append(
+                {"filename": file.filename, "status": "error", "error": str(e)}
+            )
+            failed += 1
+
+        except UnicodeDecodeError:
+            logger.error(f"File encoding error in file {file.filename}")
+            results.append(
+                {
+                    "filename": file.filename,
+                    "status": "error",
+                    "error": "File encoding error: file must be UTF-8 encoded",
+                }
+            )
+            failed += 1
+
+        except Exception as e:
+            logger.error(f"Unexpected error processing file {file.filename}: {str(e)}")
+            results.append(
+                {
+                    "filename": file.filename,
+                    "status": "error",
+                    "error": f"Unexpected error: {str(e)}",
+                }
+            )
+            failed += 1
+
+    return BatchConversionResponse(
+        results=results,
+        successful=successful,
+        failed=failed,
+        message=f"Processed {len(files)} files: {successful} successful, {failed} failed",
+    )
+
+
 def start_server(host: str = "0.0.0.0", port: int = 8000, reload: bool = False):
     """
     Start the FastAPI server
@@ -117,5 +179,4 @@ def start_server(host: str = "0.0.0.0", port: int = 8000, reload: bool = False):
 
 
 if __name__ == "__main__":
-    # Start the server when script is run directly
     start_server(reload=True)

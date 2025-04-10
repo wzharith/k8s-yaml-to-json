@@ -3,25 +3,12 @@
 import sys
 import os
 import argparse
-import uvicorn
 
 # Add the project root to the Python path
 sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
 
 from k8s_converter.cli.args import add_common_cli_args
 from k8s_converter.cli.bulk_converter import run_cli
-
-
-def start_server(host: str = "0.0.0.0", port: int = 8000, reload: bool = False):
-    """
-    Start the FastAPI server
-
-    Args:
-        host (str): Host to bind to
-        port (int): Port to bind to
-        reload (bool): Whether to enable auto-reload
-    """
-    uvicorn.run("k8s_converter.api.app:app", host=host, port=port, reload=reload)
 
 
 def add_api_parser(subparsers: argparse._SubParsersAction) -> None:
@@ -61,6 +48,8 @@ def main():
     args = parser.parse_args()
 
     if args.command == "api":
+        from k8s_converter.api.app import start_server
+
         start_server(host=args.host, port=args.port, reload=args.reload)
     elif args.command == "cli":
         sys.exit(run_cli(args))
