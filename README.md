@@ -80,3 +80,50 @@ curl -X 'POST' 'http://localhost:8000/convert/file' \
   -H 'accept: application/json' \
   -F 'file=@/path/to/your-file.yaml' \
 ```
+
+## Development
+
+### Running Tests
+
+The project uses pytest for testing. To run the tests:
+
+1. Install development dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+2. Run the tests:
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage report
+pytest --cov=k8s_converter
+
+# Run only unit tests
+pytest tests/unit
+
+# Run only integration tests
+pytest tests/integration
+```
+
+### Project Structure
+
+```
+k8s-yaml-to-json/
+├── k8s_converter/         # Main package
+│   ├── __main__.py        # Entry point
+│   ├── api/               # API server
+│   │   ├── app.py         # FastAPI application
+│   │   └── schemas.py     # Pydantic models
+│   └── core/              # Core functionality
+│       ├── converter.py   # YAML to JSON conversion
+│       └── logger.py      # Logging setup
+├── tests/                 # Test suite
+│   ├── unit/              # Unit tests
+│   └── integration/       # Integration tests
+├── requirements.txt       # Dependencies
+
+```
