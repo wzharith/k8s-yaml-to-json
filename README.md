@@ -37,13 +37,13 @@ Start the API server for on-demand conversion:
 
 ```bash
 # Start the API server on default port 8000
-python k8s-converter api
+python k8s_converter api
 
 # Specify host and port
-python k8s-converter api --host 127.0.0.1 --port 8080
+python k8s_converter api --host 127.0.0.1 --port 8080
 
 # Enable auto-reload for development
-python k8s-converter api --reload
+python k8s_converter api --reload
 ```
 
 #### API Endpoints
